@@ -1,56 +1,87 @@
 //-----Burgers_controller controls get, post, and put routes-----
-var express = require("express");
-var router = express.Router();
-var burger = require("../models/burger.js");
+var db = require("../models");
 
-//Gets all burgers and divides into available burgers and non available burgers.
-//It then sends a Handlebars object containing that data, along with the index route. 
-router.get("/", function(req, res) {
-    burger.showAllBurger(function(data) {
-        var availableBurgers = [];
-        var oldBurgers = [];
-        
-        data.forEach(function (e) {
-            if (e.devoured == false) {
-                availableBurgers.push(e);
+module.exports = function (app) {
+    
+//-----GET ROUTES----------GET ROUTES----------GET ROUTES-----
+    app.get("/", function (req, res) {
+        db.Burger.findAll({}).then(function (data) {
+            var availableBurgers = [];
+            var oldBurgers = [];
+
+            data.forEach(function (e) {
+                if (e.devoured == false) {
+                    availableBurgers.push(e);
+                } else {
+                    oldBurgers.push(e);
+                }
+            });
+
+            //console.log(availableBurgers);
+            //console.log(oldBurgers);
+
+            var hbsObject = {
+                allBurgers: data,
+                availableBurgers: availableBurgers,
+                oldBurgers: oldBurgers
+            };
+
+            //console.log(hbsObject);
+
+            res.render("index", hbsObject);
+        });
+    });
+
+    //api get routes
+    app.get("/api/burgers", function (req, res) {
+        db.Burger.findAll({}).then(function (data) {
+            res.json(data);
+            res.status(200).end();
+        });
+    });
+
+    app.get("/api/burgers/:id", function (req, res) {
+        db.Burger.findById(req.params.id)
+        .then(function(data) {
+            if (data.length === 0) {
+                res.status(404).end();
             }
             else {
-                oldBurgers.push(e);
+                res.json(data);
+                res.status(200).end();
             }
         });
-        
-        //console.log(availableBurgers);
-        //console.log(oldBurgers);
-
-        var hbsObject = {
-            allBurgers: data,
-            availableBurgers: availableBurgers,
-            oldBurgers: oldBurgers
-        };        
-        //console.log(hbsObject);
-        res.render("index", hbsObject);
     });
-});
 
-//inserts a new burger using a body-parsed param that user enters
-router.post("/api/burgers", function(req, res) {
-    //console.log(req.body.burger_name);
-    burger.insertBurger(req.body.burger_name, function(data) {
-        res.status(200).end();
+//-----POST ROUTES----------POST ROUTES----------POST ROUTES-----
+
+    //inserts a new burger using a body-parsed param that user enters
+    app.post("/api/burgers", function (req, res) {
+        db.Burger.upsert({
+            burger_name: req.body.burger_name
+        })
+        .then(function(data) {
+            res.status(200).end();
+        });
     });
-});
 
-//updates an existing burger in the database using the ID
-router.put("/api/burgers/:id", function(req, res) {
-    //console.log('test');
-    burger.eatOneBurger(req.params.id, function (data){
-        if (data.changedRows === 0) {
-            return res.status(404).end();
-        }    
-        res.status(200).end();
+//-----PUT ROUTES----------PUT ROUTES----------PUT ROUTES-----
+    //updates an existing burger in the database using the ID
+    app.put("/api/burgers/:id", function (req, res) {
+        db.Burger.update(
+            {
+                devoured: 1
+            },
+            { 
+            where: {
+                id: req.params.id
+            }
+        })
+        .then(function (data) {
+            if (data.changedRows === 0) {
+                return res.status(404).end();
+            }
+            res.status(200).end();
+        });
     });
-});
-
-
-
-module.exports = router;
+};

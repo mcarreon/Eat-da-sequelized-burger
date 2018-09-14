@@ -7,15 +7,21 @@ a {
     color: #212529a8;
     text-decoration: none;
     font-size: .9em;
+    
 }
 a:hover {
     color: black;
 }
 
 footer {
-    position: absolute;
+    position: fixed;
     bottom: 0;
     width: 100%;
+    
+}
+
+.footer {
+    width: auto;
 }
 
 h1, label {
