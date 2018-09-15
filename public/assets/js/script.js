@@ -1,10 +1,19 @@
 $(document).ready(function () {
+    function userCheck() {
+        if (window.sessionStorage.length === 0) {
+            window.location = "/";
+        }
+    }
+
+
+
     $("#burger-btn").on("click", function (e) {
         //console.log('test');
+        userCheck();
         e.preventDefault();
 
         var newBurger = {
-            burger_name: $("#burger-input").val().trim(),
+            burger_name: window.sessionStorage.getItem("currentUserName") + "'s " + $("#burger-input").val().trim(),
             CustomerId: window.sessionStorage.getItem("currentUserId")
         }
 
@@ -22,6 +31,7 @@ $(document).ready(function () {
     });
 
     $(".eat-btn").on("click", function (e) {
+        userCheck();
         e.preventDefault();
 
         var id = $(this).data("id");
@@ -50,14 +60,12 @@ $(document).ready(function () {
                 .then(function (data) {
                     var sessionStorage = window.sessionStorage;
                     sessionStorage.setItem("currentUserId", data); 
-
+                    sessionStorage.setItem("currentUserName", newCustomer.customer_name);
 
                     var url = window.location.href;
                     window.location = url + "home";
                 });
         }
-
-
     });
 
 });

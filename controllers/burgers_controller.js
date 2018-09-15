@@ -1,6 +1,8 @@
 //-----Burgers_controller controls get, post, and put routes-----
 var db = require("../models");
 
+
+
 module.exports = function (app) {
 
     //-----GET ROUTES----------GET ROUTES----------GET ROUTES-----
@@ -23,7 +25,7 @@ module.exports = function (app) {
 
             //console.log(availableBurgers);
             //console.log(oldBurgers);
-
+            //console.log(test);
             var hbsObject = {
                 allBurgers: data,
                 availableBurgers: availableBurgers,
@@ -74,6 +76,7 @@ module.exports = function (app) {
             customer_name: req.body.customer_name
         })
         .then(function (data) {
+            test = data.dataValues.id;
             res.json(data.dataValues.id); 
             res.status(200).end();
         });
