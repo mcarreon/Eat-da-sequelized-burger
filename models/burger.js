@@ -25,6 +25,15 @@ module.exports = function(sequelize, DataTypes) {
             defaultValue: sequelize.literal('CURRENT_TIMESTAMP()'), 
         },
     });
+
+    Burger.associate = function(models) {
+        Burger.belongsTo(models.Customer, {
+            foreignKey: {
+                allowNull: false
+            }
+        });
+    };
+    
     return Burger;
 };
 

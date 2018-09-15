@@ -26,7 +26,7 @@ module.exports = function (app) {
                 oldBurgers: oldBurgers
             };
 
-            //console.log(hbsObject);
+            console.log(hbsObject);
 
             res.render("index", hbsObject);
         });
